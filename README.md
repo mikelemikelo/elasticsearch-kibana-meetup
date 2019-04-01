@@ -1,2 +1,2 @@
 # elasticsearch-kibana-meetup
-Elastic ans Kibana Meetup presentation content
+Elastic and Kibana Meetup presentation content
