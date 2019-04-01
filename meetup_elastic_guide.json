@@ -1,0 +1,308 @@
+# This is the Kibana Dev tools console, we'll use this to interact with Elasticsearch
+# Elasticsearch stores documents using the JSON format
+
+# And each value must be one of 6 types to be valid JSON (string, number, object, array, boolean, null)
+# http://www.json.org/
+
+{
+  "name" : "Teradata SLC",
+  "location" : {
+    "state" : "UT",
+    "zipcode" : 84095
+  }
+}
+
+
+#__________________________________________________
+### INDEXING
+
+# Elasticsearch operates on a number of RESTENDPOINTS
+#So to start we are going to INDEX this document.
+
+POST /restaurants/_doc
+{
+  "business_city": "San Francisco",
+  "business_id": "2228",
+  "business_name": "Pizza Express",
+  "business_postal_code": "94111",
+  "business_state": "CA",
+  "business_score":80,
+  "cuisine_type": "Italian"
+}
+
+### LEST TALK ABOUT WHAT HIS DOES!
+
+# There are a number of actions we can perform for a REST ENPOINT
+# For Indexing a Document we can do either a POST or a PUT
+#FOR POST,  can specify the Name of the index, and we can specify a TYPE of an Index.
+# Only one type per index _doc
+# Indexing the document automatically created the index for us, named "restaurants"
+# The document is of type "_doc" (POST /restaurants/_doc)
+
+# IF we run it again ...
+
+# Let's search the index using a GET command.
+GET /restaurants/_doc/_search
+# We'll dive deeper into the search API soon, for now, let's focus on indexing documents
+
+# ES uses a REST API, while Indexing it matters whether we use POST or PUT
+### PUT VS POST
+# PUT requires an id for the document, as part of the URL
+
+#If we run the following code we will get an error
+PUT /restaurants/_doc
+{
+  "business_city": "San Francisco",
+  "business_id": "2229",
+  "business_name": "Wow Soup",
+  "business_postal_code": "94111",
+  "business_state": "CA",
+  "business_score":56,
+  "cuisine_type": "Asian"
+}
+
+#PUT with _id
+PUT /restaurants/_doc/12345
+{
+  "business_city": "San Francisco",
+  "business_id": "2229",
+  "business_name": "PUT Wow Soup",
+  "business_postal_code": "94111",
+  "business_state": "CA",
+  "business_score":90,
+  "cuisine_type": "Asian"
+}
+
+# Let's search the index using a GET command.
+GET /restaurants/_doc/_search
+
+
+# Indexing a NEW restaurant with additional properties [latitude, longitude, location, business_score_date].
+POST /restaurants/_doc
+{
+  "business_address": "10 Mason St",
+  "business_city": "San Francisco",
+  "business_id": "2228",
+  "business_name": "Pizza Express",
+  "business_latitude": "37.793698",
+  "business_location": {
+    "type": "Point",
+    "coordinates": [
+      -122.403984,
+      37.793698
+    ]
+  },
+  "business_longitude": "-122.403984",
+  "business_score_date": "2019-03-29T00:00:00.000",
+  "business_postal_code": "94111",
+  "business_state": "CA",
+  "business_score":56,
+  "cuisine_type": "Italian"
+}
+
+# Let's search the index using a GET command.
+GET /restaurants/_doc/_search
+
+
+## DELETING
+DELETE /restaurants
+
+# When you need to index a lot of docs, you should use the bulk API, you may see signficant performance benefits
+# Bulk insert - 6 document at a time
+POST /restaurants/_doc/_bulk
+{ "index": { "_id": 1 }}
+{"business_address":"315 California St","business_city":"San Francisco","business_id":"24936","business_latitude":"37.793199","business_location":{"type":"Point","coordinates":[-122.400152,37.793199]},"business_longitude":"-122.400152","business_name":"San Francisco Soup Company","business_postal_code":"94104","business_state":"CA","business_score":77,"cuisine_type": "American"}
+{ "index": { "_id": 2 }}
+{"business_address":"10 Mason St","business_city":"San Francisco","business_id":"60354","business_latitude":"37.783527","business_location":{"type":"Point","coordinates":[-122.409061,37.783527]},"business_longitude":"-122.409061","business_name":"Soup Unlimited","business_postal_code":"94102","business_state":"CA","business_score":95,"cuisine_type": "Asian"}
+{ "index": { "_id": 3 }}
+{"business_address":"2872 24th St","business_city":"San Francisco","business_id":"1797","business_latitude":"37.752807","business_location":{"type":"Point","coordinates":[-122.409752,37.752807]},"business_longitude":"-122.409752","business_name":"TIO CHILOS GRILL","business_postal_code":"94110","business_state":"CA","business_score":95,"cuisine_type": "Mexican"}
+{ "index": { "_id": 4 }}
+{"business_address":"1661 Tennessee St Suite 3B","business_city":"San Francisco Whard Restaurant","business_id":"66198","business_latitude":"37.75072","business_location":{"type":"Point","coordinates":[-122.388478,37.75072]},"business_longitude":"-122.388478","business_name":"Joy Luck Restaurant","business_postal_code":"94107","business_state":"CA","business_score":56,"cuisine_type": "Chinese"}
+{ "index": { "_id": 5 }}
+{"business_address":"2162 24th Ave","business_city":"San Francisco","business_id":"5794","business_latitude":"37.747228","business_location":{"type":"Point","coordinates":[-122.481299,37.747228]},"business_longitude":"-122.481299","business_name":"Pizza House","business_phone_number":"+14155752700","business_postal_code":"94116","business_state":"CA","business_score":97,"cuisine_type": "Italian"}
+{ "index": { "_id": 6 }}
+{"business_address":"2162 24th Ave","business_city":"San Francisco","business_id":"5794","business_latitude":"37.747228","business_location":{"type":"Point","coordinates":[-122.481299,37.747228]},"business_longitude":"-122.481299","business_name":"Soup-or-Salad","business_phone_number":"+14155752700","business_postal_code":"94116","business_state":"CA","business_score":96,"cuisine_type": "Italian"}
+{ "index": { "_id": 7 }}
+{"business_address":"2162 24th Ave","business_city":"San Francisco","business_id":"7884","business_latitude":"37.747228","business_location":{"type":"Point","coordinates":[-122.481299,37.747228]},"business_longitude":"-122.481299","business_name":"Best Soup and best Pizza","business_phone_number":"+14155422700","business_postal_code":"94116","business_state":"CA","business_score":80,"cuisine_type": "Italian"}
+{ "index": { "_id": 8 }}
+{"business_address":"2162 24th Ave","business_city":"San Francisco","business_id":"8776","business_latitude":"37.747228","business_location":{"type":"Point","coordinates":[-122.481299,37.747228]},"business_longitude":"-122.481299","business_name":"We have awesome Pizza and great soup","business_phone_number":"+14133222700","business_postal_code":"94116","business_state":"CA","business_score":84,"cuisine_type": "Italian"}
+
+
+#__________________________________________________
+# What we have accomplished so far.
+
+# - Installing Elasticseach and Kibana
+# - Indexing new documents
+# - Difference between indexing using PUT vs POST
+# - Adding additional properties dinamycally to new and existing documents.
+# - Bulk Indexing.
+
+#__________________________________________________
+
+
+# Let's talk about searching.
+
+#__________________________________________________
+# Let's go back to executing our basic search
+## Let's take a look at the Results.
+GET restaurants/_doc/_search
+
+# Find *all* documents
+
+
+
+
+#__________________________________________________
+# I realy like Soup! 
+# Let's find all restaurants  that sell soup
+## This is the basic structure of a basis TEXT SEARCH QUERY
+# _search REST Enpoint
+# MARCH condition , matching Field name, looking for the word SOUP
+
+GET /restaurants/_doc/_search
+{
+  "query": {
+    "match": {
+      "business_name": "soup"
+    }
+  }
+}
+
+# We also get a SCORE of the SOUP query.
+# ONE max_score for all results.
+# One per hit.
+# Scores are calculated by relevancy of this results, calculations like proximity, # times found, and so on... based on the query
+
+
+# More info: https://www.elastic.co/guide/en/elasticsearch/guide/current/relevance-intro.html
+
+# For phrases  we can use MATH Phrase.
+# Let's look for restaurants with the name San Francisco
+# Since San Francisco is two words, we'll use match_phrase
+GET /restaurants/_doc/_search
+{
+  "query": {
+    "match_phrase": {
+      "business_name": "san francisco"
+    }
+  }
+}
+
+#__________________________________________________
+# We can also do boolean combinations of queries
+# BOOL Operators.
+# Both conditions MUST be true.
+# Let's find all docs with "soup" and "san francisco" in the business name
+GET /restaurants/_doc/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "business_name": "soup"
+          }
+        },
+        {
+          "match_phrase": {
+            "business_name": "san francisco"
+          }
+        }
+      ]
+    }
+  }
+}
+
+# Sometimes it's unclear what actually matched.
+# We can highlight the matching fragments:
+
+GET /restaurants/_doc/_search
+{
+  "query" : {
+    "match": {
+      "business_name": "soup"
+    }
+  },
+  "highlight": {
+    "fields": {
+      "business_name": {}
+    }
+  }
+}
+
+
+#__________________________________________________
+# Finally, we can perform filtering, for example against Restaurant rankings
+# We would like to find the restaurants that got a score greather than 80
+
+GET /restaurants/_doc/_search
+{
+  "query": {
+      "range": {
+        "business_score": {
+          "gte": 80
+        }
+      }
+  },
+  "sort": [
+    { "business_score" : "desc" }
+  ]
+}
+
+
+#__________________________________________________
+## AGREGATIONS
+# Let's discuss briefly about aggreations
+# We won't have time to cover aggregation in depth now, but I just want to give you a quick overview about how it works.
+
+GET /restaurants/_doc/_search
+{
+  "query": {
+    "match": {
+      "business_name": "soup"
+    }
+  }
+ ,"aggregations" : {
+    "business_score" : {
+      "range" : {
+        "field" : "business_score",
+        "ranges" : [
+          {
+            "key" : "0-80",
+            "from" : 0,
+            "to" : 80
+          },
+          {
+            "key" : "81-90",
+            "from" : 81,
+            "to" : 90
+          },
+          {
+            "key" : "91-100",
+            "from" : 91,
+            "to" : 100
+          }
+        ]
+      }
+    }
+  }
+}
+
+#__________________________________________________
+## And.. Last but not least
+## Using SQL to query documents
+
+# Sample SQL Query with Elasticsearch
+POST /_xpack/sql?format=txt
+{
+    "query": "SELECT business_name, business_score FROM restaurants ORDER BY business_score DESC LIMIT 5"
+}
+
+# Multiple methods to query Elasticsearch with SQL
+# - Through the rest endpoints (as seen above)
+# - Through the included CLI tool in the /bin directory of Elasticsearch
+# - JDBC Elasticsearch client
+
+# More details can be found here: https://www.elastic.co/guide/en/elasticsearch/reference/current/xpack-sql.html
+
+
